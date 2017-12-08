@@ -1,4 +1,4 @@
-package model;
+﻿package model;
 
 /**
  * Created by Administrator on 2017/11/26.
@@ -200,7 +200,7 @@ public class Game {
 
 
         int turn=1;     //玩家出完牌之后就到1号玩家出
-        int end=(winner==-1)?winner:host;       //看winner是否为-1,就是是否为第一轮，
+        int end=(winner==-1)?host:winner;       //看winner是否为-1,就是是否为第一轮，
         while(turn!=end)        //当还有机器人没出完牌的时候，继续出，直到下一个为第一个出牌的人为止。
         {
             cardPlayerSelected[turn]=players.get(turn).select(handle,cardPlayerSelected);
