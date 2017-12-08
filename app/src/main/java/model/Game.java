@@ -17,7 +17,7 @@ public class Game {
     private int host;	//庄家是几号玩家
     private int trump;	//主牌点数
     private ArrayList<Player> players;	//玩家数组
-    private int numberOfRound;	//轮数
+    private int numberOfRound=1;	//轮数
     private Deck deck;	//牌堆
     private int[] lines = new int[4];//记录每个玩家叫的分数,-1表示pass
     private Card[] cardPlayerSelected=new Card[4];  //玩家出的牌，0 1 2 3代表位置
@@ -179,12 +179,14 @@ public class Game {
         if(turn!=0)
         {
             cardPlayerSelected[turn]=players.get(turn).select(handle,cardPlayerSelected);       //选择一张牌
+            players.get(turn).removeCard(cardPlayerSelected[turn]);
             setHandle(trump,cardPlayerSelected[turn]);
             turn=(turn+1)%4;
         }
         while(turn!=0)      //其他人继续出牌
         {
             cardPlayerSelected[turn]=players.get(turn).select(handle,cardPlayerSelected);
+            players.get(turn).removeCard(cardPlayerSelected[turn]);
             turn=(turn+1)%4;
         }
 
@@ -193,6 +195,7 @@ public class Game {
     public void runLeft(Card cardPlayerDrop)
     {
         cardPlayerSelected[0]= cardPlayerDrop;
+        players.get(0).removeCard(cardPlayerSelected[0]);
         if(winner==0||((winner==-1)&&host==0))       //如果上一个赢家是人，或者玩家是庄家，在第一轮
         {
             setHandle(trump,cardPlayerSelected[0]);
@@ -204,6 +207,7 @@ public class Game {
         while(turn!=end)        //当还有机器人没出完牌的时候，继续出，直到下一个为第一个出牌的人为止。
         {
             cardPlayerSelected[turn]=players.get(turn).select(handle,cardPlayerSelected);
+            players.get(turn).removeCard(cardPlayerSelected[turn]);
             turn=(turn+1)%4;
         }
         settlement();
@@ -251,5 +255,16 @@ public class Game {
             eneTeamScore+=score;
         }
 
+    }
+    public int getMyTeamScore() {
+        return myTeamScore;
+    }
+
+    public int getEneTeamScore() {
+        return eneTeamScore;
+    }
+
+    public int getWinner() {
+        return winner;
     }
 }
