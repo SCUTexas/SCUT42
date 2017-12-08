@@ -224,10 +224,14 @@ public class Game {
         for(int i=1;i<4;i++)
         {
             Card tmp=cardPlayerSelected[i];
-            maxCard=tmp.comp(handle,trump,maxCard)?tmp:maxCard;
+	if(tmp.comp(handle,trump,maxCard))
+{
+            maxCard=tmp;
+	    max=i;
             //判断tmp是否大于maxCard，如果大于，就把tmp作为最大的
+}
             //否则，按照原本不变
-            max=i;
+            
         }
         winner=max;
         int score=1;
