@@ -7,8 +7,8 @@ import model.Card;
 
 import java.util.ArrayList;
 public class Player {
-    private ArrayList<Card>handCards;
-    private int[] pointsHave = new int[7];
+    public ArrayList<Card>handCards;
+    public int[] pointsHave = new int[7];
     public Player()
     {
 
@@ -28,5 +28,14 @@ public class Player {
 
     public int decideTrump(ArrayList<Card> hand_Cards){
         return 20;
+    }
+
+
+    public Card select(int trump, int handle) {
+        return null;
+    }
+
+    public void removeCard(Card card){
+        this.handCards.remove(card);
     }
 }

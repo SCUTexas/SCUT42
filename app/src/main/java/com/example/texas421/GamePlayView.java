@@ -1,4 +1,4 @@
-﻿package com.example.texas421;
+package com.example.texas421;
 
 import android.content.Context;
 import android.content.res.Resources;

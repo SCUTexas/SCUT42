@@ -48,5 +48,15 @@ public class MainActivity extends Activity {
             }
         }
         );
+        ruleViewButton=(ImageButton)findViewById(R.id.bt_rulelook);
+        ruleViewButton.setOnClickListener(new View.OnClickListener()
+                                       {
+                                           @Override
+                                           public void onClick(View v){
+                                               Intent intent =new Intent(MainActivity.this,RuleActivity.class);
+                                               startActivity(intent);
+                                           }
+                                       }
+        );
     }
 }
