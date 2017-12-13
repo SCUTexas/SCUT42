@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 
 public class Game {
-    public enum GameState{Play,callline,settrump,END};
+    public enum GameState{Play,callline,settrump,END,ENDGAME};      //ENDGAME用来指示一局游戏的结束
     public GameState gameState;
     public enum CurrentPlayerType{Robot,Human};
     public CurrentPlayerType currentPlayerType=CurrentPlayerType.Human;
@@ -25,6 +25,9 @@ public class Game {
     private int myTeamScore=0;      //我们队所得的分数
     private int eneTeamScore=0;    //别人队所得的分数
     private int handle=-1;      //牌柄
+    private int myTotalScore=0;     //我队总分
+    private int eneTotalScore=0;    //别人队总分
+    private int winScore=100;       //总分超过100就赢
 
 
     public Game(Context context)
@@ -63,6 +66,9 @@ public class Game {
     public int getHost() {
         return host;
     }
+
+    public int getMyTotalScore(){return myTotalScore;}
+    public int getEneTotalScore() {return eneTotalScore;}   //返回总分
 
     //传递一个trump，int值，即用户选择的主牌数字
     //这个值应初始化为-1，因为有可能不是用户决定主牌，但是必须要有一个值
@@ -145,7 +151,7 @@ public class Game {
     {
         if(numberOfRound==1)
         {
-            winner=-1;      //证明是第一轮,还没有赢家
+            winner=-1;      //证明是第一轮,还没有赢家,或者说把赢家清空
             setHandle(trump);       //如果是第一轮，牌柄就是主牌
             eneTeamScore=0;     //初始化敌人的分
             myTeamScore=0;      //初始化我们的分
@@ -178,14 +184,14 @@ public class Game {
 
         if(turn!=0)
         {
-            cardPlayerSelected[turn]=players.get(turn).select(handle,cardPlayerSelected);       //选择一张牌
+            cardPlayerSelected[turn]=players.get(turn).select(trump,handle);       //选择一张牌
             players.get(turn).removeCard(cardPlayerSelected[turn]);
             setHandle(trump,cardPlayerSelected[turn]);
             turn=(turn+1)%4;
         }
         while(turn!=0)      //其他人继续出牌
         {
-            cardPlayerSelected[turn]=players.get(turn).select(handle,cardPlayerSelected);
+            cardPlayerSelected[turn]=players.get(turn).select(trump,handle);
             players.get(turn).removeCard(cardPlayerSelected[turn]);
             turn=(turn+1)%4;
         }
@@ -206,7 +212,7 @@ public class Game {
         int end=(winner==-1)?host:winner;       //看winner是否为-1,就是是否为第一轮，
         while(turn!=end)        //当还有机器人没出完牌的时候，继续出，直到下一个为第一个出牌的人为止。
         {
-            cardPlayerSelected[turn]=players.get(turn).select(handle,cardPlayerSelected);
+            cardPlayerSelected[turn]=players.get(turn).select(trump,handle);
             players.get(turn).removeCard(cardPlayerSelected[turn]);
             turn=(turn+1)%4;
         }
@@ -215,10 +221,41 @@ public class Game {
         {
             gameState=GameState.END;    //如果round==7了，就变为游戏结束状态
             numberOfRound=1;        //顺便把round初始化为1
+            lastSettlement();
         }
         else
             ++numberOfRound;
 
+    }
+    public void lastSettlement() //一局游戏结算
+    {
+        if(host%2==0)         //如果庄家是我们
+        {
+            if(myTeamScore>=winline) {
+                myTotalScore += myTeamScore;
+                eneTotalScore += eneTeamScore;
+            }
+            else{
+                eneTotalScore+=(winline+eneTeamScore);
+            }
+        }
+        else        //如果庄家是别人
+        {
+            if(eneTeamScore>=winline)
+            {
+                eneTotalScore+=eneTeamScore;
+                myTotalScore+=myTeamScore;
+            }
+            else{
+                myTotalScore+=(myTeamScore+winline);
+            }
+        }
+        if(eneTeamScore>=winScore||myTeamScore>=winScore)
+        {
+            gameState=GameState.ENDGAME;        //一局游戏已经结束
+        }
+        myTeamScore = 0;            //清空
+        eneTeamScore = 0;
     }
 
     public void settlement()        //结算
@@ -229,11 +266,11 @@ public class Game {
         {
             Card tmp=cardPlayerSelected[i];
 	if(tmp.comp(handle,trump,maxCard))
-{
+    {
             maxCard=tmp;
-	    max=i;
+	        max=i;
             //判断tmp是否大于maxCard，如果大于，就把tmp作为最大的
-}
+    }
             //否则，按照原本不变
             
         }
@@ -267,4 +304,16 @@ public class Game {
     public int getWinner() {
         return winner;
     }
+    public int getLastWinner(){
+        if(eneTotalScore>=winScore)
+        {
+            return 1;
+        }
+        else if(myTotalScore>=winScore)
+        {
+            return 0;
+        }
+        return -1;
+    }
+
 }
